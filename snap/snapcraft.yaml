@@ -1,0 +1,66 @@
+name:  gzdoom 
+version:        "3.5.1"
+summary:        Doom Source Port 
+description: ZDoom is a family of enhanced ports of the Doom engine for running on modern operating systems. It runs on Windows, Linux, and OS X, and adds new features not found in the games as originally published by id Software. 
+confinement: strict
+grade: stable
+
+apps:
+        gzdoom:
+                command: desktop-launch $SNAP/launcher
+                plugs:  [desktop, desktop-legacy, unity7, pulseaudio, opengl, network, joystick]
+
+                environment:
+                        LD_LIBRARY_PATH: $SNAP/usr/lib/x86_64-linux-gnu/pulseaudio:$LD_LIBRARY_PATH
+parts:
+        sourcecode:
+                source: https://github.com/coelckers/gzdoom.git
+                source-tag: g3.5.1
+                plugin: cmake
+                configflags:
+                        - -DNO_FMOD=ON
+                build-packages:
+                        - g++
+                        - make
+                        - cmake
+                        - libsdl2-dev
+                        - zlib1g-dev
+                        - libbz2-dev
+                        - libjpeg-dev
+                        - libfluidsynth-dev
+                        - libgme-dev
+                        - libopenal-dev
+                        - libmpg123-dev
+                        - libsndfile1-dev
+                        - libwildmidi-dev
+                        - libgtk-3-dev
+                        - timidity
+                        - nasm
+                        - libgl1-mesa-dev
+                        - tar
+                        - libsdl1.2-dev
+                        - libglew-dev
+
+                stage-packages:
+                        - libsdl2-2.0-0
+                        - libopenal1
+                        - libfluidsynth1
+                        - libgme0
+                        - libmpg123-0
+                        - libsndfile1
+                        - libwildmidi1
+                        - libgtk-3-0
+                        - timidity
+                        - libsdl1.2debian
+                        - libgl1-mesa-glx
+                        - libpulse0
+                        - libglu1-mesa
+                        - libgomp1
+                        - yad
+        launch:
+                plugin: dump
+                source: launcher
+                after:
+                        - desktop-gtk3
+                prime:
+                        - -share

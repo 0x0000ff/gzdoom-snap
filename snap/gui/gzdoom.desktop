@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=gzdoom
+Exec=gzdoom
+Comment=GL Doom engine source port
+Keywords=doom;gzdoom
+Type=Application
+Icon=${SNAP}/gzdoom.png
+Categories=Game;
+StartupNotify=true
