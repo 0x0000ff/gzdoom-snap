@@ -1,6 +1,6 @@
 [Desktop Entry]
 Name=gzdoom
-Exec=gzdoom
+Exec=gzdoom --snap-launcher
 Comment=GL Doom engine source port
 Keywords=doom;gzdoom
 Type=Application

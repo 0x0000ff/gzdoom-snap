@@ -2,17 +2,21 @@
 set -e
 # export LD_LIBRARY_PATH="$SNAP/usr/lib/x86_64-linux-gnu/pulseaudio:$LD_LIBRARY_PATH"
 cd ${SNAP}/share/games/doom
-${SNAP}/usr/bin/yad --form --separator="," \
-		--field="iwad":CB \
-		--field="pwad":CB \
-		--field="pk3":CB \
-		"!$(ls $SNAP_USER_DATA/.config/gzdoom | grep wad | tr -d '\n' | sed 's/.wad/.wad!/g' | head -c -1)" \
-		"!$(ls $SNAP_USER_DATA/.config/gzdoom | grep wad | tr -d '\n' | sed 's/.wad/.wad!/g' | head -c -1)" \
-		"!$(ls $SNAP_USER_DATA/.config/gzdoom | grep pk3 | tr -d '\n' | sed 's/.pk3/.pk3!/g' | head -c -1)" | \
+if [[ $1 == "--snap-launcher" ]]; then
+	${SNAP}/usr/bin/yad --form --separator="," \
+			--field="iwad":CB \
+			--field="pwad":CB \
+			--field="pk3":CB \
+			"!$(ls $SNAP_USER_DATA/.config/gzdoom | grep wad | tr -d '\n' | sed 's/.wad/.wad!/g' | head -c -1)" \
+			"!$(ls $SNAP_USER_DATA/.config/gzdoom | grep wad | tr -d '\n' | sed 's/.wad/.wad!/g' | head -c -1)" \
+			"!$(ls $SNAP_USER_DATA/.config/gzdoom | grep pk3 | tr -d '\n' | sed 's/.pk3/.pk3!/g' | head -c -1)" | \
 
-while read line; do
-	IWADNAME=`echo $line | awk -F',' '{print $1}'`
-	PWADNAME=`echo $line | awk -F',' '{print $2}'`
-	PK3NAME=`echo $line | awk -F',' '{print $3}'`
-	${SNAP}/bin/gzdoom -iwad $IWADNAME -file $PWADNAME -file $PK3NAME
-done
+	while read line; do
+		IWADNAME=`echo $line | awk -F',' '{print $1}'`
+		PWADNAME=`echo $line | awk -F',' '{print $2}'`
+		PK3NAME=`echo $line | awk -F',' '{print $3}'`
+		${SNAP}/bin/gzdoom -iwad $IWADNAME -file $PWADNAME -file $PK3NAME
+	done
+else
+	gzdoom $@
+fi
