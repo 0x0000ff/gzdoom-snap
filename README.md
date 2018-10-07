@@ -13,6 +13,6 @@ cd to the gzdoom-snap directory and run:
  
 In the same directory, run:
  
-`sudo snap install --force-dangerous gzdoom_3.5.1_amd64.snap`
+`sudo snap install --force-dangerous *.snap`
  
 The launcher should appear in your app menu. First run will take a while, but subsiquent loads be normal.
