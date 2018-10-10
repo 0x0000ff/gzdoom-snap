@@ -1,33 +1,29 @@
 #!/bin/bash
 set -e
-# export LD_LIBRARY_PATH="$SNAP/usr/lib/x86_64-linux-gnu/pulseaudio:$LD_LIBRARY_PATH"
 cd ${SNAP}/share/games/doom
 if [[ $1 == "--snap-launcher" ]]; then
-	${SNAP}/usr/bin/yad --form --separator="," \
-			--field="iwad":CB \
-			--field="pwad":CB \
-			--field="pk3":CB \
-			--field="Skill" \
-			--field="Episode" \
-			--field="Level" \
-			"!$(ls $SNAP_USER_DATA/.config/gzdoom | grep wad | tr -d '\n' | sed 's/.wad/.wad!/g' | head -c -1)" \
-			"!$(ls $SNAP_USER_DATA/.config/gzdoom | grep wad | tr -d '\n' | sed 's/.wad/.wad!/g' | head -c -1)" \
-			"!$(ls $SNAP_USER_DATA/.config/gzdoom | grep pk3 | tr -d '\n' | sed 's/.pk3/.pk3!/g' | head -c -1)"  \
-			"" "" "" | \
-
-	while read line; do
-		IWADNAME=`echo $line | awk -F',' '{print $1}'`
-		PWADNAME=`echo $line | awk -F',' '{print $2}'`
-		PK3NAME=`echo $line | awk -F',' '{print $3}'`
-		SKILL=`echo $line | awk -F',' '{print $4}'`
-		EPISODE=`echo $line | awk -F',' '{print $5}'`
-		LEVEL=`echo $line | awk -F',' '{print $5}'`
-		ARGUMENTS="-iwad $IWADNAME -file $PWADNAME -file $PK3NAME"
-		if [[ $SKILL != "" ]]; then
-			ARGUMENTS=" $ARGUMENTS -skill $SKILL -warp $EPISODE $LEVEL"
-		fi
-		${SNAP}/bin/gzdoom $ARGUMENTS
-	done
+	if [[ $(ls ${SNAP_USER_DATA} | grep .oldargs) != ".oldargs" ]]; then
+		touch ${SNAP_USER_DATA}/.oldargs
+	fi
+	OLDARGS=$(cat ${SNAP_USER_DATA}/.oldargs)
+	LAUNCHOPTIONS=$(ls ${SNAP_USER_DATA}/.config/gzdoom | grep .wad | tr -d '\n' | sed 's/.wad/.wad!/g'),$(ls ${SNAP_USER_DATA}/.config/gzdoom | grep .pk3 | tr -d '\n' | sed 's/.pk3/.pk3!/g'),$OLDARGS
+	NEWARGS=$(${SNAP}/usr/bin/yad --form --separator="," \
+		--field="iwad":CB \
+		--field="pwad":CB \
+		--field="pk3":CB \
+		--field="Skill" \
+		--field="Episode" \
+		--field="Level" \
+		$(echo $LAUNCHOPTIONS | awk -F ',' '{ print $3"!"$1,$4"!"$1,$5"!"$2 }')) 
+	if [[ "$NEWARGS" != "$OLDARGS" ]]; then
+		echo $NEWARGS > $SNAP_USER_DATA/.oldargs
+	fi
+	if [[ $(echo $NEWARGS | awk -F ',' '{ print $4 }') != "" ]]; then 
+		gzdoom $(echo $NEWARGS | awk -F ',' '{ print "-iwad",$1,"-file",$2,"-file",$3,"-skill",$4,"-warp",$5,$6 }')
+	else
+		gzdoom $(echo $NEWARGS | awk -F ',' '{ print "-iwad",$1,"-file",$2,"-file",$3 }')
+	fi
 else
 	gzdoom $@
+
 fi
